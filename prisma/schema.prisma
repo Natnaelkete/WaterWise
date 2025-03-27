@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ReportStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  DISMISSED
+}
+
+enum ReportType {
+  EMERGENCY
+  NON_EMERGENCY
+}
+
+model ReportSchema {
+  id          String       @id @default(cuid()) @db.Uuid
+  reportId    String       @unique(map: "user_reportId_idx")
+  type        ReportType
+  description String
+  location    String?
+  latitude    Float?
+  longitude   Float?
+  image       String?
+  status      ReportStatus @default(PENDING)
+  createdAt   DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime     @updatedAt
+
+  @@index([reportId])
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique(map: "user_email_idx")
+  name      String
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  MODERATOR
+  USER
+}
