@@ -19,7 +19,7 @@ enum ReportType {
   NON_EMERGENCY
 }
 
-model ReportSchema {
+model Report {
   id          String       @id @default(cuid()) @db.Uuid
   reportId    String       @unique(map: "user_reportId_idx")
   type        ReportType
