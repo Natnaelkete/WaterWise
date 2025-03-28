@@ -20,8 +20,8 @@ enum ReportType {
 }
 
 model Report {
-  id          String       @id @default(cuid()) @db.Uuid
-  reportId    String       @unique(map: "user_reportId_idx")
+  id          String       @id @default(uuid()) @db.Uuid
+  reportId    String       @unique
   type        ReportType
   description String
   location    String?
@@ -37,7 +37,7 @@ model Report {
 
 model User {
   id        String   @id @default(uuid()) @db.Uuid
-  email     String   @unique(map: "user_email_idx")
+  email     String   @unique
   name      String
   password  String
   role      Role     @default(USER)
