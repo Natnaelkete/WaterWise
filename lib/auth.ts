@@ -1,19 +1,18 @@
+import NextAuth, { AuthOptions } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { db } from "./prisma";
-import CredentialProvider from "next-auth/providers/credentials";
-import { compareSync } from "bcryptjs";
+import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import NextAuth from "next-auth";
-import type { AuthOptions } from "next-auth";
+import { compareSync } from "bcrypt-ts-edge";
+import { db } from "./prisma";
 
 export const config: AuthOptions = {
   pages: {
-    signIn: "/auth/signin",
-    error: "/auth/signin",
+    signIn: "/sign-in",
+    error: "/sign-in",
   },
   adapter: PrismaAdapter(db),
   providers: [
-    CredentialProvider({
+    CredentialsProvider({
       credentials: {
         email: { type: "email" },
         password: { type: "password" },
@@ -24,6 +23,8 @@ export const config: AuthOptions = {
         const user = await db.user.findFirst({
           where: { email: credentials?.email as string },
         });
+
+        console.log("This is from auth.ts", user);
 
         if (user && user.password) {
           const isMatch = compareSync(
@@ -40,6 +41,7 @@ export const config: AuthOptions = {
             };
           }
         }
+
         return null;
       },
     }),
@@ -71,6 +73,7 @@ export const config: AuthOptions = {
         if (user.name === "NO_NAME") {
           token.name = user.email!.split("@")[0];
 
+          // Update database to reflect the token name
           await db.user.update({
             where: { id: user.id },
             data: { name: token.name },
@@ -81,4 +84,5 @@ export const config: AuthOptions = {
     },
   },
 };
+
 export const { handlers, auth, signIn, signOut } = NextAuth(config);

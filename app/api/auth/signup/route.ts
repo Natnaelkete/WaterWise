@@ -1,6 +1,6 @@
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import bcrypt, { hashSync } from "bcryptjs";
+import { hashSync } from "bcryptjs";
 import { signIn } from "@/lib/auth";
 
 export async function POST(request: Request) {
@@ -14,7 +14,16 @@ export async function POST(request: Request) {
       );
     }
 
-    const plainPassword = password;
+    const existingUser = await db.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: "User with this email already exists" },
+        { status: 400 }
+      );
+    }
 
     const hashedPassword = hashSync(password, 10);
 
@@ -23,13 +32,14 @@ export async function POST(request: Request) {
         name,
         email,
         password: hashedPassword,
+        role: role ?? "USER",
       },
     });
 
-    await signIn("credentials", {
-      email: email,
-      password: password,
-    });
+    // await signIn("credentials", {
+    //   email: email,
+    //   password: password,
+    // });
 
     return NextResponse.json(
       {
