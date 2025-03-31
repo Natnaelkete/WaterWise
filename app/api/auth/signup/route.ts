@@ -1,7 +1,6 @@
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { hashSync } from "bcryptjs";
-import { signIn } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
@@ -35,11 +34,6 @@ export async function POST(request: Request) {
         role: role ?? "USER",
       },
     });
-
-    // await signIn("credentials", {
-    //   email: email,
-    //   password: password,
-    // });
 
     return NextResponse.json(
       {

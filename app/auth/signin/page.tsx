@@ -1,28 +1,43 @@
 "use client";
 
+import { signIn, useSession } from "next-auth/react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { signinUser } from "./action";
-import { useMutation } from "@tanstack/react-query";
+import { redirect, useRouter } from "next/navigation";
 
 export default function SignIn() {
   const router = useRouter();
-  const [email, setEmail] = useState("nati@email.com");
-  const [password, setPassword] = useState("123456");
+  const { data: session } = useSession();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { mutate: SigninUser, isLoading } = useMutation({
-    mutationKey: ["auth"],
-    mutationFn: signinUser,
-    onSuccess: () => router.push("/dashboard"),
-    onError: (err) => setError("Failed to sign up"),
-  });
+  if (session) {
+    return router.push("/dashboard");
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = { email, password };
-    console.log("This is from signINPage", formData);
-    SigninUser({ userData: formData });
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Invalid credentials");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      setError("An error occurred during sign in");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

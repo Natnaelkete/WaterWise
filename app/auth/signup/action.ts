@@ -1,3 +1,5 @@
+import { signIn } from "next-auth/react";
+
 interface userDataProps {
   userData: {
     name: string;
@@ -31,6 +33,11 @@ export const signupUser = async ({ userData }: userDataProps) => {
       console.log("API Response:", await response.text());
       throw new Error(data.message || "Something went wrong");
     }
+    await signIn("credentials", {
+      email: userData.email,
+      password: userData.password,
+      redirect: false,
+    });
   } catch (error) {
     throw new Error(
       error instanceof Error ? error.message : "Failed to sign up"
