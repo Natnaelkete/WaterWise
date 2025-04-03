@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: "Securely and anonymously report crimes to law enforcement",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;

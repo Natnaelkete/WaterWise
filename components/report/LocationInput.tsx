@@ -56,7 +56,7 @@ export function LocationInput({
 
       const { latitude, longitude } = position.coords;
       onCoordinatesChange?.(latitude, longitude);
-      onChange(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+      onChange(`${latitude}, ${longitude}`);
     } catch (error) {
       console.error("Location error:", error);
       setLocationError(

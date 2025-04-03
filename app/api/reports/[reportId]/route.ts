@@ -1,6 +1,4 @@
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/prisma";
-import { error } from "console";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
@@ -9,7 +7,7 @@ export async function PATCH(
   { params }: { params: { reportId: string } }
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession();
 
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

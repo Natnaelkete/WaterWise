@@ -1,14 +1,14 @@
-import NextAuth, { AuthOptions } from "next-auth";
+import { AuthOptions } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
+import { db } from "@/lib/prisma";
 import { compareSync } from "bcrypt-ts-edge";
-import { db } from "./prisma";
+import GoogleProvider from "next-auth/providers/google";
 
-export const config: AuthOptions = {
+export const authOptions: AuthOptions = {
   pages: {
-    signIn: "/sign-in",
-    error: "/sign-in",
+    signIn: "/auth/signin",
+    error: "/auth/signin",
   },
   adapter: PrismaAdapter(db),
   providers: [
@@ -23,8 +23,6 @@ export const config: AuthOptions = {
         const user = await db.user.findFirst({
           where: { email: credentials?.email as string },
         });
-
-        console.log("This is from auth.ts", user);
 
         if (user && user.password) {
           const isMatch = compareSync(
@@ -55,17 +53,6 @@ export const config: AuthOptions = {
     maxAge: 30 * 24 * 60 * 60,
   },
   callbacks: {
-    async session({ session, user, trigger, token }: any) {
-      session.user.id = token.sub;
-      session.user.role = token.role;
-      session.user.name = token.name;
-
-      if (trigger === "update") {
-        session.user.name = user.name;
-      }
-
-      return session;
-    },
     async jwt({ token, user, trigger, session }: any) {
       if (user) {
         token.role = user.role;
@@ -80,13 +67,22 @@ export const config: AuthOptions = {
           });
         }
       }
+      if (session?.user.name && trigger === "update") {
+        token.name = session.user.name;
+      }
+
       return token;
+    },
+    async session({ session, user, trigger, token }: any) {
+      session.user.id = token.sub;
+      session.user.role = token.role;
+      session.user.name = token.name;
+
+      if (trigger === "update") {
+        session.user.name = user.name;
+      }
+
+      return session;
     },
   },
 };
-
-const nextAuth = NextAuth(config);
-
-const handler = NextAuth(config);
-export { handler as GET, handler as POST };
-export { handler as auth };

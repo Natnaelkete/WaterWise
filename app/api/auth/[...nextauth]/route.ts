@@ -9,8 +9,8 @@ import GoogleProvider from "next-auth/providers/google";
 
 const handler = NextAuth({
   pages: {
-    signIn: "/sign-in",
-    error: "/sign-in",
+    signIn: "/auth/signin",
+    error: "/auth/signin",
   },
   adapter: PrismaAdapter(db),
   providers: [
@@ -25,8 +25,6 @@ const handler = NextAuth({
         const user = await db.user.findFirst({
           where: { email: credentials?.email as string },
         });
-
-        console.log("This is from auth.ts", user);
 
         if (user && user.password) {
           const isMatch = compareSync(
@@ -57,17 +55,6 @@ const handler = NextAuth({
     maxAge: 30 * 24 * 60 * 60,
   },
   callbacks: {
-    async session({ session, user, trigger, token }: any) {
-      session.user.id = token.sub;
-      session.user.role = token.role;
-      session.user.name = token.name;
-
-      if (trigger === "update") {
-        session.user.name = user.name;
-      }
-
-      return session;
-    },
     async jwt({ token, user, trigger, session }: any) {
       if (user) {
         token.role = user.role;
@@ -82,7 +69,22 @@ const handler = NextAuth({
           });
         }
       }
+      if (session?.user.name && trigger === "update") {
+        token.name = session.user.name;
+      }
+
       return token;
+    },
+    async session({ session, user, trigger, token }: any) {
+      session.user.id = token.sub;
+      session.user.role = token.role;
+      session.user.name = token.name;
+
+      if (trigger === "update") {
+        session.user.name = user.name;
+      }
+
+      return session;
     },
   },
 });

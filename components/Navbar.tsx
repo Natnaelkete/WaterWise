@@ -4,9 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import MobileMenu from "./MobileMenu";
 import { Droplets } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { data: session } = useSession();
+  console.log(session);
 
   return (
     <>
