@@ -1,11 +1,12 @@
-import { AuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { db } from "@/lib/prisma";
-import { compareSync } from "bcrypt-ts-edge";
 import GoogleProvider from "next-auth/providers/google";
+import { compareSync } from "bcrypt-ts-edge";
+import type { NextAuthConfig } from "next-auth";
+import { db } from "./prisma";
 
-export const authOptions: AuthOptions = {
+export const config = {
   pages: {
     signIn: "/auth/signin",
     error: "/auth/signin",
@@ -53,8 +54,20 @@ export const authOptions: AuthOptions = {
     maxAge: 30 * 24 * 60 * 60,
   },
   callbacks: {
+    async session({ session, user, trigger, token }: any) {
+      session.user.id = token.sub;
+      session.user.role = token.role;
+      session.user.name = token.name;
+
+      if (trigger === "update") {
+        session.user.name = user.name;
+      }
+
+      return session;
+    },
     async jwt({ token, user, trigger, session }: any) {
       if (user) {
+        token.id = user.id;
         token.role = user.role;
 
         if (user.name === "NO_NAME") {
@@ -67,22 +80,23 @@ export const authOptions: AuthOptions = {
           });
         }
       }
+
       if (session?.user.name && trigger === "update") {
         token.name = session.user.name;
       }
-
       return token;
     },
-    async session({ session, user, trigger, token }: any) {
-      session.user.id = token.sub;
-      session.user.role = token.role;
-      session.user.name = token.name;
+    authorized({ request, auth }: any) {
+      // Array of regex patterns of paths we want to protect
+      const protectedPaths = [/\/dashboard\/(.*)/, /\/admin/];
 
-      if (trigger === "update") {
-        session.user.name = user.name;
-      }
+      // Get pathname from the req URL object
+      const { pathname } = request.nextUrl;
 
-      return session;
+      // Check if user is not authenticated and accessing a protected path
+      if (!auth && protectedPaths.some((p) => p.test(pathname))) return false;
     },
   },
-};
+} satisfies NextAuthConfig;
+
+export const { handlers, auth, signIn, signOut } = NextAuth(config);
