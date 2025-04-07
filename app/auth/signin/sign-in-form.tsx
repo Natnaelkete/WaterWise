@@ -1,7 +1,6 @@
 "use client";
 
 import { signInWithCredentials } from "@/lib/user.action";
-import { useSearchParams } from "next/navigation";
 import React, { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 
@@ -10,9 +9,6 @@ const SingInForm = () => {
     success: true,
     message: "",
   });
-
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
 
   function SubmitButton() {
     const { pending } = useFormStatus();
@@ -36,7 +32,6 @@ const SingInForm = () => {
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
       <div className="bg-neutral-900/50 backdrop-blur-sm py-8 px-4 shadow-xl border border-neutral-800 rounded-xl sm:px-10">
         <form className="space-y-6" action={action}>
-          <input type="hidden" name="callbackUrl" value={callbackUrl} />
           <div>
             <label
               htmlFor="email"

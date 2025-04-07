@@ -8,8 +8,8 @@ import QueryProviders from "@/components/QueryProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SafeReport - Anonymous Crime Reporting App",
-  description: "Securely and anonymously report crimes to law enforcement",
+  title: "WaterWise - Water pipe Leakage Reporting and waste management App",
+  description: "Securely report any water pipe leakage to Administrators",
 };
 
 export default async function RootLayout({

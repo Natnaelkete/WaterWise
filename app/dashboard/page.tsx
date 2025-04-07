@@ -1,6 +1,6 @@
 import { signOutUser } from "@/lib/user.action";
 import Dashboard from "./dashboard";
-import {  signOut } from "@/lib/auth";
+import { signOut } from "@/lib/auth";
 import { requireAdmin } from "@/lib/auth-guard";
 
 export default async function DashboardPage() {

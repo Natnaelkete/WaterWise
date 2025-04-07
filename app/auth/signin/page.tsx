@@ -2,17 +2,13 @@ import { auth } from "@/lib/auth";
 import SingInForm from "./sign-in-form";
 import { redirect } from "next/navigation";
 
-export default async function SignInPage(props: {
-  searchParams: Promise<{
-    callbackUrl: string;
-  }>;
-}) {
-  const { callbackUrl } = await props.searchParams;
+export default async function SignInPage() {
   const session = await auth();
 
-  if (session) {
-    console.log("This is signPage", session);
-    return redirect(callbackUrl || "/dashboard");
+  if (session?.user.role === "ADMIN") {
+    return redirect("/dashboard");
+  } else {
+    return redirect("/");
   }
 
   return (

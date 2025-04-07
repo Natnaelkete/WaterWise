@@ -2,6 +2,7 @@
 
 import { signUpUser } from "@/lib/user.action";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import React, { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 
@@ -44,6 +45,7 @@ const SignUpForm = () => {
                 id="name"
                 name="name"
                 type="text"
+                defaultValue="kebede"
                 required
                 className="appearance-none block w-full px-3 py-2 border border-neutral-800 rounded-lg bg-neutral-900 placeholder-neutral-500 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
                 placeholder="Enter your full name"
@@ -64,6 +66,7 @@ const SignUpForm = () => {
                 name="email"
                 type="email"
                 autoComplete="email"
+                defaultValue="kebede@gmail.com"
                 required
                 className="appearance-none block w-full px-3 py-2 border border-neutral-800 rounded-lg bg-neutral-900 placeholder-neutral-500 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
                 placeholder="Enter your email"
@@ -83,6 +86,7 @@ const SignUpForm = () => {
                 id="password"
                 name="password"
                 type="password"
+                defaultValue="123456"
                 required
                 className="appearance-none block w-full px-3 py-2 border border-neutral-800 rounded-lg bg-neutral-900 placeholder-neutral-500 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
                 placeholder="Create a password"
@@ -102,6 +106,7 @@ const SignUpForm = () => {
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
+                defaultValue="123456"
                 required
                 className="appearance-none block w-full px-3 py-2 border border-neutral-800 rounded-lg bg-neutral-900 placeholder-neutral-500 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
                 placeholder="Confirm your password"
