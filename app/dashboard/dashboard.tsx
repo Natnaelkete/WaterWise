@@ -18,9 +18,17 @@ const Dashboard = () => {
     try {
       const response = await fetch("/api/reports");
       const data = await response.json();
-      setReports(data);
+
+      const reportsArray = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.reports)
+        ? data.reports
+        : [];
+
+      setReports(reportsArray);
     } catch (error) {
       console.error("Error fetching reports:", error);
+      setReports([]);
     } finally {
       setIsLoading(false);
     }
