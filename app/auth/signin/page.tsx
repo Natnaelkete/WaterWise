@@ -5,9 +5,10 @@ import { redirect } from "next/navigation";
 export default async function SignInPage() {
   const session = await auth();
 
-  if (session?.user.role === "ADMIN") {
+  if (session?.user?.role === "ADMIN") {
     return redirect("/dashboard");
-  } else {
+  }
+  if (session?.user?.role === "USER") {
     return redirect("/");
   }
 

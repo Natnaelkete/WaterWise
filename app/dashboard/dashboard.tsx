@@ -47,7 +47,7 @@ const Dashboard = () => {
     }
   };
 
-  const filteredReports = reports.filter((report) => {
+  const filteredReports = reports?.filter((report) => {
     const statusMatch = filter === "ALL" || report.status === filter;
     const typeMatch = typeFilter === "ALL" || report.type === typeFilter;
     return statusMatch && typeMatch;

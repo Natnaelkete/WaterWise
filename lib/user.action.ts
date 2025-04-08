@@ -18,6 +18,8 @@ export async function signInWithCredentials(
 
     await signIn("credentials", user);
 
+    revalidatePath("/dashboard");
+
     return { success: true, message: "Sign in successfully" };
   } catch (error) {
     if (isRedirectError(error)) {

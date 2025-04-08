@@ -1,54 +1,21 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import { compareSync } from "bcrypt-ts-edge";
-import type { NextAuthConfig } from "next-auth";
-import { db } from "./prisma";
 
-export const config = {
+import { db } from "./prisma";
+import authConfig from "@/auth.config";
+
+export const {
+  handlers: { GET, POST },
+  auth,
+  signIn,
+  signOut,
+} = NextAuth({
   pages: {
     signIn: "/auth/signin",
     error: "/auth/signin",
   },
   adapter: PrismaAdapter(db),
-  providers: [
-    CredentialsProvider({
-      credentials: {
-        email: { type: "email" },
-        password: { type: "password" },
-      },
-      async authorize(credentials) {
-        if (credentials === null) return null;
 
-        const user = await db.user.findFirst({
-          where: { email: credentials?.email as string },
-        });
-
-        if (user && user.password) {
-          const isMatch = compareSync(
-            credentials?.password as string,
-            user.password
-          );
-
-          if (isMatch) {
-            return {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              role: user.role,
-            };
-          }
-        }
-
-        return null;
-      },
-    }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
@@ -96,6 +63,7 @@ export const config = {
       return true;
     },
   },
-} satisfies NextAuthConfig;
+  ...authConfig,
+});
 
-export const { handlers, auth, signIn, signOut } = NextAuth(config);
+// export const { handlers, auth, signIn, signOut } = NextAuth(config);

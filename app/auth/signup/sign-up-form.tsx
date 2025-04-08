@@ -1,8 +1,8 @@
 "use client";
 
 import { signUpUser } from "@/lib/user.action";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import React, { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 
