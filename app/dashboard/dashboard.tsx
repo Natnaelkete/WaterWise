@@ -17,12 +17,12 @@ const Dashboard = () => {
     setIsLoading(true);
     try {
       const response = await fetch("/api/reports");
-      const data = await response.json();
+      const apiData = await response.json();
 
-      const reportsArray = Array.isArray(data)
-        ? data
-        : Array.isArray(data?.reports)
-        ? data.reports
+      const reportsArray = Array.isArray(apiData)
+        ? apiData
+        : Array.isArray(apiData?.data)
+        ? apiData.data
         : [];
 
       setReports(reportsArray);

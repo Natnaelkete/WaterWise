@@ -1,5 +1,5 @@
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function PATCH(
@@ -7,9 +7,9 @@ export async function PATCH(
   { params }: { params: { reportId: string } }
 ) {
   try {
-    const session = await getServerSession();
+    const session = await auth();
 
-    if (!session) {
+    if (session?.user?.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

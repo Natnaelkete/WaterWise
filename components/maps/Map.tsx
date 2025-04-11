@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { Report } from "@prisma/client";
-import { LatLngExpression, LatLngTuple } from "leaflet";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
@@ -41,7 +40,7 @@ const Map = () => {
     } finally {
       setIsLoading(false);
     }
-  })
+  };
 
   if (isLoading) {
     return (
@@ -53,8 +52,11 @@ const Map = () => {
 
   return (
     <MapContainer
-      center={[7.6890118, 36.8198714]}
-      zoom={19}
+      center={[
+        reports[0]?.latitude || 7.6890118,
+        reports[0]?.longitude || 36.8198714,
+      ]}
+      zoom={10}
       scrollWheelZoom={false}
       style={{ height: "100%", width: "100%" }}
     >
