@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface LocationInputProps {
   value: string;
@@ -14,6 +14,10 @@ export function LocationInput({
 }: LocationInputProps) {
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getLocation();
+  }, []);
 
   const getLocation = async () => {
     setIsGettingLocation(true);

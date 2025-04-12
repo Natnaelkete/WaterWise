@@ -11,28 +11,29 @@ interface ReportFormProps {
 }
 
 export function ReportForm({ onComplete }: ReportFormProps) {
+  const [positionModal, setPositionModal] = useState({
+    isOnPosition: false,
+    isModalOpen: true,
+  });
   const [formData, setFormData] = useState({
     incidentType: "" as ReportType,
     location: "",
     description: "",
     title: "",
+    image: "" as string,
+    latitude: 0 as number,
+    longitude: 0 as number,
   });
-  const [image, setImage] = useState<string | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [coordinates, setCoordinates] = useState<{
-    latitude: number | null;
-    longitude: number | null;
-  }>({
-    latitude: null,
-    longitude: null,
+  const [status, setStatus] = useState({
+    isAnalyzing: false,
+    isSubmitting: false,
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsAnalyzing(true);
+    setStatus((prev) => ({ ...prev, isAnalyzing: true }));
 
     try {
       const base64 = await new Promise((resolve) => {
@@ -40,11 +41,11 @@ export function ReportForm({ onComplete }: ReportFormProps) {
         reader.onloadend = () => resolve(reader.result);
         reader.readAsDataURL(file);
       });
-      setImage(base64 as string);
+      setFormData((prev) => ({ ...prev, image: base64 as string }));
     } catch (error) {
       console.error("Error analyzing image:", error);
     } finally {
-      setIsAnalyzing(false);
+      setStatus((prev) => ({ ...prev, isAnalyzing: false }));
     }
   };
 
@@ -61,7 +62,7 @@ export function ReportForm({ onComplete }: ReportFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setStatus((prev) => ({ ...prev, isSubmitting: true }));
 
     try {
       const reportData = {
@@ -69,9 +70,9 @@ export function ReportForm({ onComplete }: ReportFormProps) {
         type: formData.incidentType,
         description: formData.description,
         location: formData.location,
-        latitude: coordinates.latitude,
-        longitude: coordinates.longitude,
-        image: image,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        image: formData.image,
         status: "PENDING",
       };
 
@@ -94,7 +95,7 @@ export function ReportForm({ onComplete }: ReportFormProps) {
     } catch (error) {
       console.error("Error submitting report:", error);
     } finally {
-      setIsSubmitting(false);
+      setStatus((prev) => ({ ...prev, isAnalyzing: false }));
     }
   };
 
@@ -180,11 +181,11 @@ export function ReportForm({ onComplete }: ReportFormProps) {
                    hover:border-sky-500/50 hover:bg-sky-500/5 transition-all duration-200
                    cursor-pointer text-center"
         >
-          {image ? (
+          {formData.image ? (
             <div className="space-y-4">
               <div className="w-full h-48 relative rounded-lg overflow-hidden">
                 <img
-                  src={image}
+                  src={formData.image}
                   alt="Preview"
                   className="w-full h-full object-cover"
                 />
@@ -212,7 +213,7 @@ export function ReportForm({ onComplete }: ReportFormProps) {
             </div>
           )}
         </label>
-        {isAnalyzing && (
+        {status.isAnalyzing && (
           <div className="absolute inset-0 bg-black/50 rounded-2xl flex items-center justify-center">
             <div className="flex items-center space-x-3">
               <svg
@@ -243,19 +244,115 @@ export function ReportForm({ onComplete }: ReportFormProps) {
         )}
       </div>
 
+      {positionModal.isModalOpen && (
+        <div
+          className="w-full rounded-xl space-y-6 bg-zinc-900/50 border border-zinc-700 px-4 py-3.5
+                   text-white"
+        >
+          <h1 className="text-center font-medium text-zinc-400">
+            Are you in the location right were leakage happened?
+          </h1>
+          <div className="flex w-full gap-3 justify-end">
+            <button
+              onClick={() =>
+                setPositionModal((prev) => ({
+                  ...prev,
+                  isOnPosition: false,
+                  isModalOpen: false,
+                }))
+              }
+              type="button"
+              className="w-24 group overflow-hidden rounded-xl bg-zinc-900/50 border border-zinc-800
+                 px-4 py-3.5 text-sm font-medium text-white shadow-lg
+                 transition-all duration-200 hover:from-sky-400 hover:to-blue-500
+                 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              No
+            </button>
+            <button
+              onClick={() =>
+                setPositionModal((prev) => ({
+                  ...prev,
+                  isOnPosition: true,
+                  isModalOpen: false,
+                }))
+              }
+              type="button"
+              className="w-24 group overflow-hidden rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 
+                 px-4 py-3.5 text-sm font-medium text-white shadow-lg
+                 transition-all duration-200 hover:from-sky-400 hover:to-blue-500
+                 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Location */}
-      <LocationInput
-        value={formData.location}
-        onChange={(value) =>
-          setFormData((prev) => ({ ...prev, location: value }))
-        }
-        onCoordinatesChange={(lat, lng) =>
-          setCoordinates({
-            latitude: lat,
-            longitude: lng,
-          })
-        }
-      />
+      {positionModal.isOnPosition && (
+        <LocationInput
+          value={formData.location}
+          onChange={(value) =>
+            setFormData((prev) => ({ ...prev, location: value }))
+          }
+          onCoordinatesChange={(lat, lng) =>
+            setFormData((prev) => ({
+              ...prev,
+              latitude: lat as number,
+              longitude: lng as number,
+            }))
+          }
+        />
+      )}
+      {!positionModal.isOnPosition && (
+        <div
+          className={`${
+            positionModal.isModalOpen ? "hidden" : ""
+          } flex gap-4 w-full`}
+        >
+          <div className="w-full">
+            <label className="block text-sm font-medium text-zinc-400 mb-2">
+              Latitude
+            </label>
+            <input
+              value={formData.latitude}
+              type="number"
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  latitude: Number(e.target.value),
+                }))
+              }
+              className="w-full 
+              } rounded-xl bg-zinc-900/50 border border-zinc-800 px-4 py-3.5
+                   text-white transition-colors duration-200
+                   focus:outline-none focus:ring-2 focus:ring-sky-500/40"
+              required
+            />
+          </div>
+          <div className="w-full">
+            <label className="block text-sm font-medium text-zinc-400 mb-2">
+              Longitude
+            </label>
+            <input
+              value={formData.longitude}
+              type="number"
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  longitude: Number(e.target.value),
+                }))
+              }
+              className="w-full 
+              } rounded-xl bg-zinc-900/50 border border-zinc-800 px-4 py-3.5
+                   text-white transition-colors duration-200
+                   focus:outline-none focus:ring-2 focus:ring-sky-500/40"
+              required
+            />
+          </div>
+        </div>
+      )}
 
       {/* Description */}
       <div>
@@ -278,14 +375,14 @@ export function ReportForm({ onComplete }: ReportFormProps) {
       {/* Submit Button */}
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={status.isSubmitting}
         className="w-full relative group overflow-hidden rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 
                  px-4 py-3.5 text-sm font-medium text-white shadow-lg
                  transition-all duration-200 hover:from-sky-400 hover:to-blue-500
                  disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <div className="relative flex items-center justify-center gap-2">
-          {isSubmitting ? (
+          {status.isSubmitting ? (
             <>
               <svg
                 className="animate-spin h-4 w-4"
