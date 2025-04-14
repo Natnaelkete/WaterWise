@@ -67,7 +67,7 @@ const AdminMap = () => {
           ]}
           draggable={false}
         >
-          <Popup>Hey ! I study here</Popup>
+          <Popup>{report.status}</Popup>
         </Marker>
       ))}
     </MapContainer>

@@ -23,6 +23,7 @@ const UserMap = () => {
       center={[lat || 0, lng || 0]}
       zoom={10}
       scrollWheelZoom={true}
+      className="h-screen"
       style={{ height: "100%", width: "100%" }}
     >
       <TileLayer
@@ -30,7 +31,14 @@ const UserMap = () => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <Marker position={[lat || 0, lng || 0]} draggable={false}>
-        <Popup>Hey ! I study here</Popup>
+        <Popup>
+          <h2 className="font-bold mb-2">
+            Latitude: <span className="selection:bg-zinc-300">{lat}</span>
+          </h2>
+          <h2 className="font-bold">
+            Longitude: <span className="selection:bg-zinc-300">{lng}</span>
+          </h2>
+        </Popup>
       </Marker>
       <DetectClick />
       <ChangeCenter lat={lat} lng={lng} />
