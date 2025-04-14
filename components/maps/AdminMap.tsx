@@ -8,14 +8,9 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 
-const defaults = {
-  zoom: 19,
-};
-
-const Map = () => {
+const AdminMap = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [reports, setReports] = useState<Report[]>([]);
-  console.log("This is from Map", reports);
 
   useEffect(() => {
     fetchReports();
@@ -57,7 +52,7 @@ const Map = () => {
         reports[0]?.longitude || 36.8198714,
       ]}
       zoom={10}
-      scrollWheelZoom={false}
+      scrollWheelZoom={true}
       style={{ height: "100%", width: "100%" }}
     >
       <TileLayer
@@ -79,4 +74,4 @@ const Map = () => {
   );
 };
 
-export default Map;
+export default AdminMap;
