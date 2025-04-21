@@ -80,6 +80,7 @@ export function LocationInput({
         <input
           type="text"
           autoComplete="country"
+          disabled={true}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Enter location or use pin"

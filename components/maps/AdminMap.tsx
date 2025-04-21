@@ -1,16 +1,20 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { Report } from "@prisma/client";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
+import { useSearchParams } from "next/navigation";
 
 const AdminMap = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [reports, setReports] = useState<Report[]>([]);
+  const searchParams = useSearchParams();
+  const lat = Number(searchParams?.get("lat"));
+  const lng = Number(searchParams?.get("lng"));
 
   useEffect(() => {
     fetchReports();
@@ -70,8 +74,16 @@ const AdminMap = () => {
           <Popup>{report.status}</Popup>
         </Marker>
       ))}
+      <ChangeCenter lat={lat} lng={lng} />
     </MapContainer>
   );
 };
+
+function ChangeCenter({ lat, lng }: { lat: number; lng: number }) {
+  const map = useMap();
+
+  map.setView([lat, lng]);
+  return null;
+}
 
 export default AdminMap;

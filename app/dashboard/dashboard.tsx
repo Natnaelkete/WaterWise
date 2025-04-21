@@ -2,12 +2,17 @@
 
 import { Report, ReportStatus, ReportType } from "@prisma/client";
 import { useEffect, useState } from "react";
+// import {} from "lucide-react"
+import { useRouter } from "next/navigation";
+import { MapPin } from "lucide-react";
 
 const Dashboard = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [filter, setFilter] = useState<ReportStatus | "ALL">("ALL");
   const [typeFilter, setTypeFilter] = useState<ReportType | "ALL">("ALL");
   const [isLoading, setIsLoading] = useState(true);
+
+  const router = useRouter();
 
   useEffect(() => {
     fetchReports();
@@ -60,6 +65,8 @@ const Dashboard = () => {
     const typeMatch = typeFilter === "ALL" || report.type === typeFilter;
     return statusMatch && typeMatch;
   });
+
+  console.log("This is from Dashboard", filteredReports);
 
   const getStatusColor = (status: ReportStatus) => {
     const colors = {
@@ -154,7 +161,7 @@ const Dashboard = () => {
                       <div className="w-4 h-4 rounded-full bg-neutral-800 flex items-center justify-center">
                         <div className="w-2 h-2 rounded-full bg-neutral-600"></div>
                       </div>
-                      {report.location || "N/A"}
+                      {`${report.latitude} ${report.longitude}` || "N/A"}
                     </span>
                     <span className="flex items-center gap-2">
                       <div className="w-4 h-4 rounded-full bg-neutral-800 flex items-center justify-center">
@@ -187,6 +194,15 @@ const Dashboard = () => {
                     </option>
                   ))}
                 </select>
+              </div>
+              <div className="flex justify-end cursor-pointer">
+                <MapPin
+                  onClick={() =>
+                    router.push(
+                      `/map?lat=${report.latitude}&lng=${report.longitude}`
+                    )
+                  }
+                />
               </div>
             </div>
           ))}
