@@ -13,6 +13,11 @@ const AdminNav = async () => {
             </h1>
           </Link>
           <div className="flex items-center gap-6">
+            <Link href="/map">
+              <span className="text-neutral-400 hover:text-neutral-200">
+                Map
+              </span>
+            </Link>
             <span className="text-neutral-400">
               {session?.user?.name || "Admin"}
             </span>

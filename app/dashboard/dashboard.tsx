@@ -66,8 +66,6 @@ const Dashboard = () => {
     return statusMatch && typeMatch;
   });
 
-  console.log("This is from Dashboard", filteredReports);
-
   const getStatusColor = (status: ReportStatus) => {
     const colors = {
       PENDING: "bg-amber-500/10 text-amber-500 border border-amber-500/20",

@@ -41,6 +41,10 @@ const AdminMap = () => {
     }
   };
 
+  const filteredReport = reports?.filter(
+    (report) => report.status !== "RESOLVED"
+  );
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black">
@@ -63,7 +67,7 @@ const AdminMap = () => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {reports?.map((report) => (
+      {filteredReport?.map((report) => (
         <Marker
           position={[
             (report.latitude as number) || 7.4230114,
