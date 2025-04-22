@@ -109,7 +109,7 @@ export default function Home() {
               },
               {
                 title: "Secure Communication",
-                description: "Two-way anonymous channel with law enforcement",
+                description: "Two-way anonymous channel with our admins",
                 icon: (
                   <svg
                     className="h-6 w-6 text-sky-400"
@@ -169,7 +169,7 @@ export default function Home() {
           <div className="mt-40 mb-20 flex justify-center">
             <div className="inline-flex items-center gap-3 rounded-full bg-zinc-900 px-5 py-2 text-sm text-zinc-400">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              Trusted by Law Enforcement Nationwide
+              Trusted by Water Minister Nationwide
             </div>
           </div>
         </div>

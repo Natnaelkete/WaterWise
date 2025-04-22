@@ -43,7 +43,7 @@ export function ReportSubmitted({ data }: ReportSubmittedProps) {
         </div>
         <p className="mt-2 text-sm text-zinc-400">
           Save this ID to check your report status or communicate securely with
-          law enforcement
+          our admins
         </p>
       </div>
 
