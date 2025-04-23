@@ -1,5 +1,5 @@
 import { MapIcon } from "lucide-react";
-import Image from "next/image";
+import Link from "next/link";
 
 export default function HowItWorks() {
   return (
@@ -230,7 +230,10 @@ export default function HowItWorks() {
             <h2 className="text-2xl font-bold text-white mb-6">
               Ready to Make a Report?
             </h2>
-            <button className="group relative inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-sky-500 px-8 text-sm font-medium text-white transition-all hover:bg-sky-400">
+            <Link
+              href="/submit-report"
+              className="group relative inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-sky-500 px-8 text-sm font-medium text-white transition-all hover:bg-sky-400"
+            >
               Start Anonymous Report
               <svg
                 className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
@@ -245,7 +248,7 @@ export default function HowItWorks() {
                   d="M5 12h14M12 5l7 7-7 7"
                 />
               </svg>
-            </button>
+            </Link>
           </div>
         </div>
       </main>
