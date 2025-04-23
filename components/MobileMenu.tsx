@@ -55,13 +55,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             >
               Track Report
             </Link>
-            <Link
-              href="/how-it-works"
-              className="text-sm text-zinc-400 hover:text-white transition-colors"
-              onClick={onClose}
-            >
-              How It Works
-            </Link>
+
             <Link
               href="/waste-management"
               className="text-sm text-zinc-400 hover:text-white transition-colors"
@@ -77,12 +71,18 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               Map
             </Link>
             <Link
-              href="/contact"
+              href="/how-it-works"
+              className="text-sm text-zinc-400 hover:text-white transition-colors"
+              onClick={onClose}
+            >
+              How It Works
+            </Link>
+            <p
               className="text-sm text-zinc-400 hover:text-white transition-colors"
               onClick={onClose}
             >
               Contact
-            </Link>
+            </p>
           </nav>
         </div>
       </div>
