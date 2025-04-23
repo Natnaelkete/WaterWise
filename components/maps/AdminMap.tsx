@@ -1,7 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMap,
+  LayersControl,
+} from "react-leaflet";
+
+import L from "leaflet";
+
 import { Report } from "@prisma/client";
 
 import "leaflet/dist/leaflet.css";
@@ -15,6 +25,12 @@ const AdminMap = () => {
   const searchParams = useSearchParams();
   const lat = Number(searchParams?.get("lat"));
   const lng = Number(searchParams?.get("lng"));
+
+  const { BaseLayer, Overlay } = LayersControl;
+
+  // var GeoportailFrance_orthos = L.tileLayer(
+
+  // );
 
   useEffect(() => {
     fetchReports();
@@ -63,15 +79,46 @@ const AdminMap = () => {
       scrollWheelZoom={true}
       style={{ height: "100%", width: "100%" }}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      <LayersControl position="topright">
+        <BaseLayer checked name="OpenStreetMap">
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+        </BaseLayer>
+
+        <BaseLayer name="Satellite Map">
+          <TileLayer
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+          />
+        </BaseLayer>
+        <BaseLayer name="Stamen Toner">
+          <TileLayer
+            url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png"
+            attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+        </BaseLayer>
+        <BaseLayer name="CartoDB Dark Matter">
+          <TileLayer
+            url="https://tiles.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CartoDB</a>'
+          />
+        </BaseLayer>
+        <BaseLayer name="CartoDB Positron">
+          <TileLayer
+            url="https://tiles.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CartoDB</a>'
+          />
+        </BaseLayer>
+      </LayersControl>
+
       {filteredReport?.map((report) => (
         <Marker
+          key={report.id}
           position={[
-            (report.latitude as number) || 7.4230114,
-            (report.longitude as number) || 36.8594321,
+            report.latitude || 7.4230114,
+            report.longitude || 36.8594321,
           ]}
           draggable={false}
         >
