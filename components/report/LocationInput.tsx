@@ -18,6 +18,10 @@ export function LocationInput({
     getLocation();
   }, []);
 
+  interface GeolocationError extends Error {
+    code: number;
+  }
+
   const getLocation = async () => {
     setIsGettingLocation(true);
     setLocationError(null);
@@ -27,35 +31,37 @@ export function LocationInput({
         throw new Error("Geolocation is not supported by your browser");
       }
 
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          resolve,
-          (error) => {
-            switch (error.code) {
-              case error.PERMISSION_DENIED:
-                reject(
-                  new Error(
-                    "Please allow location access in your browser settings"
-                  )
-                );
-                break;
-              case error.POSITION_UNAVAILABLE:
-                reject(new Error("Location information is unavailable"));
-                break;
-              case error.TIMEOUT:
-                reject(new Error("Location request timed out"));
-                break;
-              default:
-                reject(new Error("An unknown error occurred"));
+      const position = await new Promise<GeolocationPosition>(
+        (resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            (position: GeolocationPosition) => resolve(position),
+            (error: GeolocationPositionError) => {
+              switch (error.code) {
+                case error.PERMISSION_DENIED:
+                  reject(
+                    new Error(
+                      "Please allow location access in your browser settings"
+                    )
+                  );
+                  break;
+                case error.POSITION_UNAVAILABLE:
+                  reject(new Error("Location information is unavailable"));
+                  break;
+                case error.TIMEOUT:
+                  reject(new Error("Location request timed out"));
+                  break;
+                default:
+                  reject(new Error("An unknown error occurred"));
+              }
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0,
             }
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0,
-          }
-        );
-      });
+          );
+        }
+      );
 
       const { latitude, longitude } = position.coords;
       onCoordinatesChange?.(latitude, longitude);
