@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { db } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { reportId: string } }
 ) {
   try {
@@ -15,7 +15,7 @@ export async function GET(
 
     const report = await db.report.findUnique({
       where: {
-        reportId: params.reportId,
+        id: params.reportId, // Changed from reportId to id if that's your Prisma model field
       },
     });
 
