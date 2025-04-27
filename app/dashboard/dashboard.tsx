@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 // import {} from "lucide-react"
 import { useRouter } from "next/navigation";
 import { MapPin } from "lucide-react";
+import Image from "next/image";
 
 const Dashboard = () => {
   const [reports, setReports] = useState<Report[]>([]);
@@ -169,7 +170,7 @@ const Dashboard = () => {
                     </span>
                   </div>
                   {report.image && (
-                    <img
+                    <Image
                       src={report.image}
                       alt="Report"
                       className="mt-4 w-20 h-20 rounded-lg border border-neutral-800"

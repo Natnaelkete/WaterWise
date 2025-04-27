@@ -34,7 +34,7 @@ export default function SubmitReport() {
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-400">
-              Your contribution is important, it could save many life's
+              Your contribution is important, it could save many life&apos;s
             </p>
           </div>
 

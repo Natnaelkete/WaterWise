@@ -10,8 +10,6 @@ import {
   LayersControl,
 } from "react-leaflet";
 
-import L from "leaflet";
-
 import { Report } from "@prisma/client";
 
 import "leaflet/dist/leaflet.css";
@@ -26,11 +24,7 @@ const AdminMap = () => {
   const lat = Number(searchParams?.get("lat"));
   const lng = Number(searchParams?.get("lng"));
 
-  const { BaseLayer, Overlay } = LayersControl;
-
-  // var GeoportailFrance_orthos = L.tileLayer(
-
-  // );
+  const { BaseLayer } = LayersControl;
 
   useEffect(() => {
     fetchReports();

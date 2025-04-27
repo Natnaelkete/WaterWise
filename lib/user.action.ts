@@ -1,6 +1,6 @@
 "use server";
 
-import { auth, signIn, signOut } from "@/lib/auth";
+import { signIn, signOut } from "@/lib/auth";
 import { hashSync } from "bcrypt-ts-edge";
 import { db } from "./prisma";
 import { revalidatePath } from "next/cache";
