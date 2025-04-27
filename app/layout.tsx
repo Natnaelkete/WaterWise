@@ -7,11 +7,16 @@ import QueryProviders from "@/components/QueryProvider";
 import { auth } from "@/lib/auth";
 import { SessionProvider } from "next-auth/react";
 import AdminNav from "@/components/AdminNav";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "WaterWise - Water pipe Leakage Reporting and waste management App",
+  title: {
+    template: `%s | WaterWise`,
+    default:
+      "WaterWise - Water pipe Leakage Reporting and waste management App",
+  },
   description: "Securely report any water pipe leakage to Administrators",
 };
 
@@ -36,6 +41,7 @@ export default async function RootLayout({
               <QueryProviders>{children}</QueryProviders>
             </main>
           </div>
+          <Toaster />
         </body>
       </html>
     </SessionProvider>
