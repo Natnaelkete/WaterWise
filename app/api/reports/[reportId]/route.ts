@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { reportId: string } }
+  { params }: { params: Promise<{ reportId: string }> }
 ) {
   try {
     const session = await auth();
@@ -15,7 +15,7 @@ export async function PATCH(
 
     const { status } = await request.json();
     const report = await db.report.update({
-      where: { id: params.reportId },
+      where: { id: (await params).reportId },
       data: { status },
     });
 
