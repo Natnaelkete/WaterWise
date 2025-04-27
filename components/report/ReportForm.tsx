@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { LocationInput } from "./LocationInput";
 import crypto from "crypto";
+import Image from "next/image";
 
 type ReportType = "EMERGENCY" | "NON_EMERGENCY";
 
@@ -184,7 +185,7 @@ export function ReportForm({ onComplete }: ReportFormProps) {
           {formData.image ? (
             <div className="space-y-4">
               <div className="w-full h-48 relative rounded-lg overflow-hidden">
-                <img
+                <Image
                   src={formData.image}
                   alt="Preview"
                   className="w-full h-full object-cover"
