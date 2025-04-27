@@ -3,10 +3,11 @@ import { db } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { reportId: string } }
+  request: Request,
+  { params }: { params: Promise<{ reportId: string }> }
 ) {
   try {
+    const reportId = (await params).reportId;
     const session = await auth();
 
     if (!session) {
@@ -15,7 +16,7 @@ export async function GET(
 
     const report = await db.report.findUnique({
       where: {
-        id: params.reportId, // Changed from reportId to id if that's your Prisma model field
+        id: (await params).reportId, // Changed from reportId to id if that's your Prisma model field
       },
     });
 
