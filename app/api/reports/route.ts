@@ -46,7 +46,7 @@ export async function GET(req: Request) {
       count: reports.length,
     });
   } catch (error) {
-    console.log("From report route", error)
+    console.log("From report route", error);
     return NextResponse.json(
       {
         success: false,

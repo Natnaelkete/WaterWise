@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
@@ -19,6 +20,7 @@ export async function PATCH(
       data: { status },
     });
 
+    revalidatePath("/dashboard");
     return NextResponse.json(report);
   } catch (error) {
     console.log("Report id error", error);
