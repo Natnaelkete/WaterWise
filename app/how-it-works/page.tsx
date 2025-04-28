@@ -31,8 +31,8 @@ export default function HowItWorks() {
               Understanding Our Process
             </div>
 
-            <h1 className="mt-8 bg-gradient-to-b from-white to-white/80 bg-clip-text text-5xl font-bold tracking-tight text-transparent">
-              How WaterWise Works
+            <h1 className="mt-8 bg-gradient-to-b from-white to-white/80 bg-clip-text text-4xl md:text-5xl font-bold tracking-tight text-transparent">
+              How WaterWise Work
               <span className="block text-2xl mt-4 bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
                 Your Report is Our Priority
               </span>
@@ -123,7 +123,7 @@ export default function HowItWorks() {
                 className="group relative overflow-hidden rounded-2xl bg-zinc-900 p-8 transition-all hover:bg-zinc-800/80"
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-sky-500/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                <div className="relative flex gap-6">
+                <div className="relative space-y-5 md:flex gap-6">
                   <div className="flex-shrink-0">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10">
                       {step.icon}

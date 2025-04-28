@@ -29,8 +29,11 @@ export default function SubmitReport() {
               Report & save water
             </div>
 
-            <h1 className="mt-8 bg-gradient-to-b from-white to-white/80 bg-clip-text text-5xl font-bold tracking-tight text-transparent">
-              Submit Leakage Report
+            <h1 className="mt-8 bg-gradient-to-b from-white to-white/80 bg-clip-text text-4xl md:text-5xl font-bold tracking-tight text-transparent">
+              Submit Leakage
+              <span className="block bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
+                Report
+              </span>
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-400">
@@ -38,7 +41,7 @@ export default function SubmitReport() {
             </p>
           </div>
 
-          <div className="mt-16 bg-zinc-900/50 rounded-2xl border border-white/5 p-6">
+          <div className="mt-16 bg-zinc-900/50 rounded-2xl border border-white/5 md:p-6 w-full">
             <ReportWizard />
           </div>
         </div>

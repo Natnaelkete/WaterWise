@@ -9,10 +9,10 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 md:hidden">
+    <div className="fixed inset-0 z-[999] md:hidden">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm "
         onClick={onClose}
       />
 

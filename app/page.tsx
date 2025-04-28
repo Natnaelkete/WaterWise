@@ -24,14 +24,14 @@ export default function Home() {
               Report & Manage any wastes
             </div>
 
-            <h1 className="mt-8 bg-gradient-to-b from-white to-white/80 bg-clip-text text-6xl font-bold tracking-tight text-transparent sm:text-6xl">
+            <h1 className="mt-8 bg-gradient-to-b from-white to-white/80 bg-clip-text text-5xl font-bold tracking-tight text-transparent sm:text-6xl">
               Fix Leaks Faster, Waste Smarter
               <span className="block bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
                 Before It’s Too Late
               </span>
             </h1>
 
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-400">
+            <p className="mt-6 max-w-2xl  text-lg  leading-relaxed text-zinc-400">
               WaterWise uses AI to detect pipe leaks and analyze waste in
               real-time. Report issues with a tap, get instant disposal guides,
               and prevent disasters—before they escalate. Every second counts
@@ -57,7 +57,7 @@ export default function Home() {
                 </button>
               </Link>
               <Link href={"/how-it-works"}>
-                <button className="flex h-12 items-center justify-center gap-2 rounded-xl bg-white/5 px-8 text-sm font-medium text-white ring-1 ring-inset ring-white/10 transition-all hover:bg-white/10">
+                <button className="flex h-12 items-center w-full justify-center gap-2 rounded-xl bg-white/5 px-8 text-sm font-medium text-white ring-1 ring-inset ring-white/10 transition-all hover:bg-white/10">
                   How it Works
                 </button>
               </Link>
