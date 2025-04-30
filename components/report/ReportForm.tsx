@@ -4,6 +4,8 @@ import { useState, useCallback } from "react";
 import { LocationInput } from "./LocationInput";
 import crypto from "crypto";
 import Image from "next/image";
+import UserMap from "../maps/UserMap";
+import { useSearchParams } from "next/navigation";
 
 type ReportType = "EMERGENCY" | "NON_EMERGENCY";
 
@@ -16,6 +18,11 @@ export function ReportForm({ onComplete }: ReportFormProps) {
     isOnPosition: false,
     isModalOpen: true,
   });
+
+  const searchParams = useSearchParams();
+  const lat = Number(searchParams.get("lat"));
+  const lng = Number(searchParams.get("lng"));
+
   const [formData, setFormData] = useState({
     incidentType: "" as ReportType,
     location: "",
@@ -98,6 +105,14 @@ export function ReportForm({ onComplete }: ReportFormProps) {
     } finally {
       setStatus((prev) => ({ ...prev, isAnalyzing: false }));
     }
+  };
+  // Function to update only coordinates
+  const updateCoordinates = (lat: number, lng: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng,
+    }));
   };
 
   return (
@@ -307,49 +322,58 @@ export function ReportForm({ onComplete }: ReportFormProps) {
         />
       )}
       {!positionModal.isOnPosition && (
-        <div
-          className={`${
-            positionModal.isModalOpen ? "hidden" : ""
-          } flex gap-4 w-full`}
-        >
-          <div className="w-full">
-            <label className="block text-sm font-medium text-zinc-400 mb-2">
-              Latitude
-            </label>
-            <input
-              value={formData.latitude}
-              type="number"
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  latitude: Number(e.target.value),
-                }))
-              }
-              className="w-full 
+        <div className={`${positionModal.isModalOpen ? "hidden" : ""} w-full`}>
+          <div className="flex gap-4 w-full">
+            <div className="w-full">
+              <label className="block text-sm font-medium text-zinc-400 mb-2">
+                Latitude
+              </label>
+              <input
+                disabled={true}
+                value={formData.latitude}
+                type="text"
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    latitude: Number(e.target.value),
+                  }))
+                }
+                className="w-full 
               } rounded-xl bg-zinc-900/50 border border-zinc-800 px-4 py-3.5
                    text-white transition-colors duration-200
                    focus:outline-none focus:ring-2 focus:ring-sky-500/40"
-              required
-            />
+                required
+              />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm font-medium text-zinc-400 mb-2">
+                Longitude
+              </label>
+              <input
+                disabled={true}
+                value={formData.longitude}
+                type="text"
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    longitude: Number(e.target.value),
+                  }))
+                }
+                className="w-full 
+              } rounded-xl bg-zinc-900/50 border border-zinc-800 px-4 py-3.5
+                   text-white transition-colors duration-200
+                   focus:outline-none focus:ring-2 focus:ring-sky-500/40"
+                required
+              />
+            </div>
           </div>
-          <div className="w-full">
-            <label className="block text-sm font-medium text-zinc-400 mb-2">
-              Longitude
-            </label>
-            <input
-              value={formData.longitude}
-              type="number"
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  longitude: Number(e.target.value),
-                }))
-              }
-              className="w-full 
-              } rounded-xl bg-zinc-900/50 border border-zinc-800 px-4 py-3.5
-                   text-white transition-colors duration-200
-                   focus:outline-none focus:ring-2 focus:ring-sky-500/40"
-              required
+          <div className="h-[300px] mt-5">
+            <UserMap
+              setCoordinates={updateCoordinates}
+              LatLng={{
+                latitude: formData.latitude,
+                longitude: formData.longitude,
+              }}
             />
           </div>
         </div>
