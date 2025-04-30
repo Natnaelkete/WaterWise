@@ -1,11 +1,14 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 interface GlobalErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
 }
 
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
+  const router = useRouter();
   return (
     <html className="h-full">
       <body className="h-full bg-gray-50 flex flex-col items-center justify-center p-4">
@@ -30,7 +33,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             Something went wrong!
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            {error.message || "An unexpected error occurred"}
+            {"An unexpected error occurred"}
           </p>
           {error.digest && (
             <p className="mt-2 text-xs text-gray-500">
@@ -38,7 +41,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             </p>
           )}
           <button
-            onClick={() => reset()}
+            onClick={() => router.refresh()}
             className="mt-4 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
             Try Again
