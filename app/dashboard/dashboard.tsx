@@ -1,17 +1,19 @@
 "use client";
 
 import { Report, ReportStatus, ReportType } from "@prisma/client";
-import { useEffect, useState } from "react";
-// import {} from "lucide-react"
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin } from "lucide-react";
+import { MapPin, TrashIcon } from "lucide-react";
 import Image from "next/image";
+import { toast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [filter, setFilter] = useState<ReportStatus | "ALL">("ALL");
   const [typeFilter, setTypeFilter] = useState<ReportType | "ALL">("ALL");
   const [isLoading, setIsLoading] = useState(true);
+
+  const [isPending, startTransition] = useTransition();
 
   const router = useRouter();
 
@@ -40,6 +42,29 @@ const Dashboard = () => {
     }
   };
 
+  const deleteReport = async (id: string) => {
+    try {
+      const response = await fetch(`/api/reports/delete/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        toast({
+          title: "Couldn't delete the report",
+          variant: "destructive",
+        });
+      }
+      await fetchReports();
+      toast({
+        title: "Report deleted successfully",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Error deleting report:", error);
+    }
+  };
+
   const updateReportStatus = async (
     reportId: string,
     newStatus: ReportStatus
@@ -54,7 +79,7 @@ const Dashboard = () => {
       });
 
       if (response.ok) {
-        fetchReports();
+        await fetchReports();
       }
     } catch (error) {
       console.error("Error updating report:", error);
@@ -78,13 +103,14 @@ const Dashboard = () => {
     return colors[status];
   };
 
-  if (isLoading) {
+  if (isLoading || isPending) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
   }
+
   return (
     <>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -171,6 +197,8 @@ const Dashboard = () => {
                   </div>
                   {report.image && (
                     <Image
+                      width={20}
+                      height={20}
                       src={report.image}
                       alt="Report"
                       className="mt-4 w-20 h-20 rounded-lg border border-neutral-800"
@@ -180,10 +208,12 @@ const Dashboard = () => {
                 <select
                   value={report.status}
                   onChange={(e) =>
-                    updateReportStatus(
-                      report.id,
-                      e.target.value as ReportStatus
-                    )
+                    startTransition(async () => {
+                      await updateReportStatus(
+                        report.id,
+                        e.target.value as ReportStatus
+                      );
+                    })
                   }
                   className="bg-neutral-900 border border-neutral-800 text-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
                 >
@@ -194,14 +224,28 @@ const Dashboard = () => {
                   ))}
                 </select>
               </div>
-              <div className="flex justify-end cursor-pointer">
-                <MapPin
-                  onClick={() =>
-                    router.push(
-                      `/map?lat=${report.latitude}&lng=${report.longitude}`
-                    )
-                  }
-                />
+              <div className="flex justify-end space-x-2">
+                <div className="cursor-pointer">
+                  <MapPin
+                    className="text-white/80 hover:text-white/50 transition-colors"
+                    onClick={() =>
+                      router.push(
+                        `/map?lat=${report.latitude}&lng=${report.longitude}`
+                      )
+                    }
+                  />
+                </div>
+                <div className="cursor-pointer">
+                  <TrashIcon
+                    className="text-red-700 hover:text-red-500 transition-colors"
+                    onClick={() => {
+                      alert("Are you sure you want to delete it?");
+                      startTransition(async () => {
+                        await deleteReport(report.id);
+                      });
+                    }}
+                  />
+                </div>
               </div>
             </div>
           ))}
