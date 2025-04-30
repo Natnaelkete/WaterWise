@@ -46,12 +46,6 @@ export default function Navbar() {
                 Waste management
               </Link>
               <Link
-                href="/map"
-                className="text-sm text-zinc-400 hover:text-white transition-colors"
-              >
-                Map
-              </Link>
-              <Link
                 href="/how-it-works"
                 className="text-sm text-zinc-400 hover:text-white transition-colors"
               >

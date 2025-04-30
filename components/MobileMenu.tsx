@@ -64,25 +64,12 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               Waste management
             </Link>
             <Link
-              href="/map"
-              className="text-sm text-zinc-400 hover:text-white transition-colors"
-              onClick={onClose}
-            >
-              Map
-            </Link>
-            <Link
               href="/how-it-works"
               className="text-sm text-zinc-400 hover:text-white transition-colors"
               onClick={onClose}
             >
               How It Works
             </Link>
-            <p
-              className="text-sm text-zinc-400 hover:text-white transition-colors"
-              onClick={onClose}
-            >
-              Contact
-            </p>
           </nav>
         </div>
       </div>
