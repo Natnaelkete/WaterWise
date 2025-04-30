@@ -16,40 +16,47 @@ import "leaflet-defaulticon-compatibility";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
-const UserMap = () => {
-  const searchParams = useSearchParams();
-  const lat = Number(searchParams.get("lat"));
-  const lng = Number(searchParams.get("lng"));
+type FormType = {
+  setCoordinates: (lat: number, lng: number) => void;
+  LatLng: { latitude: number; longitude: number };
+};
 
+const UserMap = ({
+  setCoordinates,
+  LatLng: { latitude, longitude },
+}: FormType) => {
   // Define the bounding box for Ethiopia (approximate coordinates)
   const ethiopiaBounds = new LatLngBounds([3.385, 32.98], [14.875, 48.02]);
 
   return (
     <MapContainer
-      center={[lat || 9.145, lng || 40.4897]}
+      center={[latitude || 9.145, longitude || 40.4897]}
       className="h-screen"
-      zoom={6}
       scrollWheelZoom={true}
       style={{ height: "100%", width: "100%" }}
       maxBounds={ethiopiaBounds}
-      minZoom={6}
+      minZoom={3}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={[lat || 9.145, lng || 40.4897]} draggable={false}>
+      <Marker
+        position={[latitude || 9.145, longitude || 40.4897]}
+        draggable={false}
+      >
         <Popup>
           <h2 className="font-bold mb-2">
-            Latitude: <span className="selection:bg-zinc-300">{lat}</span>
+            Latitude: <span className="selection:bg-zinc-300">{latitude}</span>
           </h2>
           <h2 className="font-bold">
-            Longitude: <span className="selection:bg-zinc-300">{lng}</span>
+            Longitude:{" "}
+            <span className="selection:bg-zinc-300">{longitude}</span>
           </h2>
         </Popup>
       </Marker>
-      <DetectClick />
-      {lat && lng && <ChangeCenter lat={lat} lng={lng} />}
+      <DetectClick setCoordinates={setCoordinates} />
+      {latitude && longitude && <ChangeCenter lat={latitude} lng={longitude} />}
       <SetInitialView bounds={ethiopiaBounds} />
     </MapContainer>
   );
@@ -66,12 +73,12 @@ function SetInitialView({ bounds }: { bounds: LatLngBounds }) {
   return null;
 }
 
-function DetectClick() {
+function DetectClick({ setCoordinates }: any) {
   const router = useRouter();
 
   useMapEvents({
     click: (e) => {
-      router.push(`map?lat=${e.latlng.lat}&lng=${e.latlng.lng}`);
+      setCoordinates(e.latlng.lat, e.latlng.lng);
     },
   });
 
