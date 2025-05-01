@@ -38,6 +38,7 @@
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.5",
     "react-hook-form": "^7.53.2",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-leaflet": "^5.0.0",
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.6.0",

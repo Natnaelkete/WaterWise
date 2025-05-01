@@ -1,44 +1,45 @@
 "use client";
 
 import { Report, ReportStatus, ReportType } from "@prisma/client";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useOptimistic, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { MapPin, TrashIcon } from "lucide-react";
 import Image from "next/image";
 import { toast } from "@/hooks/use-toast";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const Dashboard = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [filter, setFilter] = useState<ReportStatus | "ALL">("ALL");
   const [typeFilter, setTypeFilter] = useState<ReportType | "ALL">("ALL");
   const [isLoading, setIsLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+  const limit = Number(process.env.LIMITS) || 10;
 
   const [isPending, startTransition] = useTransition();
-
   const router = useRouter();
 
   useEffect(() => {
-    fetchReports();
+    fetchReports(true);
   }, []);
 
-  const fetchReports = async () => {
-    setIsLoading(true);
+  const fetchReports = async (initialLoad = false) => {
     try {
-      const response = await fetch("/api/reports");
-      const apiData = await response.json();
+      const response = await fetch(`/api/reports?page=${page}&limit=${limit}`);
+      const { data: newItems, hasMore: moreAvailable } = await response.json();
 
-      const reportsArray = Array.isArray(apiData)
-        ? apiData
-        : Array.isArray(apiData?.data)
-        ? apiData.data
-        : [];
+      setReports((prev) => [...prev, ...newItems]);
+      setHasMore(moreAvailable);
+      setPage((prev) => prev + 1);
 
-      setReports(reportsArray);
+      if (initialLoad) {
+        setIsLoading(false);
+      }
     } catch (error) {
       console.error("Error fetching reports:", error);
       setReports([]);
-    } finally {
-      setIsLoading(false);
+      setHasMore(false);
     }
   };
 
@@ -46,22 +47,32 @@ const Dashboard = () => {
     try {
       const response = await fetch(`/api/reports/delete/${id}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
       });
 
       if (!response.ok) {
+        await fetchReports();
         toast({
           title: "Couldn't delete the report",
           variant: "destructive",
         });
+        return;
       }
-      await fetchReports();
+
+      setReports((prev) => prev.filter((report) => report.id !== id));
       toast({
         title: "Report deleted successfully",
         variant: "default",
       });
     } catch (error) {
+      // Revert optimistic update by refetching reports
+      startTransition(async () => {
+        await fetchReports();
+      });
       console.error("Error deleting report:", error);
+      toast({
+        title: "Error deleting report",
+        variant: "destructive",
+      });
     }
   };
 
@@ -70,6 +81,12 @@ const Dashboard = () => {
     newStatus: ReportStatus
   ) => {
     try {
+      setReports((prev) =>
+        prev.map((report) =>
+          report.id === reportId ? { ...report, status: newStatus } : report
+        )
+      );
+
       const response = await fetch(`/api/reports/${reportId}`, {
         method: "PATCH",
         headers: {
@@ -78,15 +95,17 @@ const Dashboard = () => {
         body: JSON.stringify({ status: newStatus }),
       });
 
-      if (response.ok) {
+      if (!response.ok) {
+        // Revert if the API call fails
         await fetchReports();
       }
     } catch (error) {
       console.error("Error updating report:", error);
+      // Revert if there's an error
+      await fetchReports();
     }
   };
-
-  const filteredReports = reports?.filter((report) => {
+  const filteredReports = reports.filter((report) => {
     const statusMatch = filter === "ALL" || report.status === filter;
     const typeMatch = typeFilter === "ALL" || report.type === typeFilter;
     return statusMatch && typeMatch;
@@ -153,103 +172,124 @@ const Dashboard = () => {
         </div>
 
         <div className="grid gap-4">
-          {filteredReports.map((report) => (
-            <div
-              key={report.id}
-              className="bg-neutral-900/50 backdrop-blur-sm rounded-xl p-6 border border-neutral-800 hover:border-neutral-700 transition-all"
-            >
-              <div className="flex justify-between items-start gap-6">
-                <div className="space-y-4 flex-1">
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-lg font-medium text-neutral-200">
-                      Status
-                    </h2>
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                        report.status
-                      )}`}
-                    >
-                      {report.status}
-                    </span>
-                  </div>
-                  <p className="text-neutral-400 text-sm">
-                    {report.description}
-                  </p>
-                  <div className="flex flex-wrap gap-6 text-sm text-neutral-500">
-                    <span className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-neutral-800 flex items-center justify-center">
-                        <div className="w-2 h-2 rounded-full bg-neutral-600"></div>
-                      </div>
-                      {report.type}
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-neutral-800 flex items-center justify-center">
-                        <div className="w-2 h-2 rounded-full bg-neutral-600"></div>
-                      </div>
-                      {`${report.latitude} ${report.longitude}` || "N/A"}
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-neutral-800 flex items-center justify-center">
-                        <div className="w-2 h-2 rounded-full bg-neutral-600"></div>
-                      </div>
-                      {new Date(report.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                  {report.image && (
-                    <Image
-                      width={20}
-                      height={20}
-                      src={report.image}
-                      alt="Report"
-                      className="mt-4 w-20 h-20 rounded-lg border border-neutral-800"
-                    />
-                  )}
-                </div>
-                <select
-                  value={report.status}
-                  onChange={(e) =>
-                    startTransition(async () => {
-                      await updateReportStatus(
-                        report.id,
-                        e.target.value as ReportStatus
-                      );
-                    })
-                  }
-                  className="bg-neutral-900 border border-neutral-800 text-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
-                >
-                  {Object.values(ReportStatus).map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
+          <InfiniteScroll
+            dataLength={filteredReports.length}
+            next={fetchReports}
+            hasMore={hasMore}
+            loader={
+              <div className="p-4 text-center text-gray-500">
+                Loading more items...
               </div>
-              <div className="flex justify-end space-x-2">
-                <div className="cursor-pointer">
-                  <MapPin
-                    className="text-white/80 hover:text-white/50 transition-colors"
-                    onClick={() =>
-                      router.push(
-                        `/map?lat=${report.latitude}&lng=${report.longitude}`
-                      )
-                    }
-                  />
-                </div>
-                <div className="cursor-pointer">
-                  <TrashIcon
-                    className="text-red-700 hover:text-red-500 transition-colors"
-                    onClick={() => {
-                      alert("Are you sure you want to delete it?");
+            }
+            endMessage={
+              <p className="p-4 text-center text-gray-500">
+                You've reached the end of the list
+              </p>
+            }
+            className="grid gap-4"
+          >
+            {filteredReports.map((report) => (
+              <div
+                key={report.id}
+                className="bg-neutral-900/50 backdrop-blur-sm rounded-xl p-6 border border-neutral-800 hover:border-neutral-700 transition-all"
+              >
+                <div className="flex justify-between items-start gap-6">
+                  <div className="space-y-4 flex-1">
+                    <div className="flex items-center gap-3">
+                      <h2 className="text-lg font-medium text-neutral-200">
+                        Status
+                      </h2>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                          report.status
+                        )}`}
+                      >
+                        {report.status}
+                      </span>
+                    </div>
+                    <p className="text-neutral-400 text-sm">
+                      {report.description}
+                    </p>
+                    <div className="flex flex-wrap gap-6 text-sm text-neutral-500">
+                      <span className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-neutral-800 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-neutral-600"></div>
+                        </div>
+                        {report.type}
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-neutral-800 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-neutral-600"></div>
+                        </div>
+                        {`${report.latitude} ${report.longitude}` || "N/A"}
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-neutral-800 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-neutral-600"></div>
+                        </div>
+                        {new Date(report.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    {report.image && (
+                      <Image
+                        width={20}
+                        height={20}
+                        src={report.image}
+                        alt="Report"
+                        className="mt-4 w-20 h-20 rounded-lg border border-neutral-800"
+                      />
+                    )}
+                  </div>
+                  <select
+                    value={report.status}
+                    onChange={(e) =>
                       startTransition(async () => {
-                        await deleteReport(report.id);
-                      });
-                    }}
-                  />
+                        await updateReportStatus(
+                          report.id,
+                          e.target.value as ReportStatus
+                        );
+                      })
+                    }
+                    className="bg-neutral-900 border border-neutral-800 text-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
+                  >
+                    {Object.values(ReportStatus).map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <div className="cursor-pointer">
+                    <MapPin
+                      className="text-white/80 hover:text-white/50 transition-colors"
+                      onClick={() =>
+                        router.push(
+                          `/map?lat=${report.latitude}&lng=${report.longitude}`
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="cursor-pointer">
+                    <TrashIcon
+                      className="text-red-700 hover:text-red-500 transition-colors"
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            "Are you sure you want to delete this report?"
+                          )
+                        ) {
+                          startTransition(async () => {
+                            await deleteReport(report.id);
+                          });
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-
+            ))}
+          </InfiniteScroll>
           {filteredReports.length === 0 && (
             <div className="text-center py-12 text-neutral-500 bg-neutral-900/50 rounded-xl border border-neutral-800">
               No reports found matching the selected filters.
