@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 interface DashboardErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
@@ -79,12 +81,12 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
           </button>
 
           <div className="text-center">
-            <a
+            <Link
               href="/"
               className="text-sm font-medium text-red-600 hover:text-red-500"
             >
               Or return to homepage
-            </a>
+            </Link>
           </div>
         </div>
       </div>
