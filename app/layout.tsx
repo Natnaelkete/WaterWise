@@ -6,7 +6,6 @@ import Navbar from "@/components/Navbar";
 import QueryProviders from "@/components/QueryProvider";
 import { auth } from "@/lib/auth";
 import { SessionProvider } from "next-auth/react";
-import AdminNav from "@/components/AdminNav";
 import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -35,7 +34,7 @@ export default async function RootLayout({
               <div className="absolute inset-0 h-full bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.03),transparent_100%)]" />
               <div className="absolute inset-0 h-full bg-[radial-gradient(circle_at_center,rgba(14,165,233,0.04),transparent_100%)]" />
             </div>
-            {session?.user?.role === "ADMIN" ? <AdminNav /> : <Navbar />}
+            {session?.user?.role !== "ADMIN" && <Navbar />}
 
             <main className="">
               <QueryProviders>{children}</QueryProviders>
