@@ -33,7 +33,12 @@ const SideBar = async () => {
             Map
           </div>
         </Link>
-        <Link href="/user">
+        <Link href="/dashboard/users">
+          <div className="text-neutral-400 mb-5  p-2 rounded-sm hover:bg-gray-800/50 hover:text-neutral-200 hover:translate-x-1 transition-all">
+            Users
+          </div>
+        </Link>
+        <Link href="/dashboard/add-user">
           <div className="text-neutral-400 mb-5  p-2 rounded-sm hover:bg-gray-800/50 hover:text-neutral-200 hover:translate-x-1 transition-all">
             Add user
           </div>

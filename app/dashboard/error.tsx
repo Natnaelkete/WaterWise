@@ -50,14 +50,8 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
               </div>
               <div className="ml-3">
                 <p className="text-sm text-red-700">
-                  {error.message ||
-                    "An unexpected error occurred in the dashboard"}
+                  {"An unexpected error occurred in the dashboard"}
                 </p>
-                {error.digest && (
-                  <p className="mt-1 text-xs text-red-600">
-                    Error reference: {error.digest}
-                  </p>
-                )}
               </div>
             </div>
           </div>
