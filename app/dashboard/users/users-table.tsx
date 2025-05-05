@@ -1,4 +1,4 @@
-// app/components/users-table.tsx
+"use client";
 import {
   Table,
   TableBody,
@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Pencil } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,21 +16,44 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { db } from "@/lib/prisma";
+import { deleteUser } from "@/lib/user.action";
+import { Role } from "@prisma/client";
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 
-export async function UsersTable() {
-  const users = await db.user.findMany({
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      phone: true,
-      role: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+type UserType = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  role: Role;
+};
+
+export function UsersTable({ users }: { users: UserType[] }) {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const handleDelete = (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+    startTransition(async () => {
+      try {
+        await deleteUser(id);
+        router.refresh();
+      } catch (error) {
+        console.error("Error deleting user:", error);
+        alert("Failed to delete user");
+      }
+    });
+  };
+
+  if (isPending) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-lg border border-gray-800 bg-gray-900/50 backdrop-blur-sm">
@@ -88,12 +111,18 @@ export async function UsersTable() {
                         href={`/dashboard/users/edit/${user.id}`}
                         className="flex items-center w-full"
                       >
-                        <Pencil className="mr-2 h-4 w-4 text-gray-400" />
+                        <Pencil className="mr-2 h-3 w-3 text-gray-400" />
                         <span className="text-gray-300">Edit</span>
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-500 hover:bg-gray-800 focus:bg-gray-800">
-                      Delete
+                    <DropdownMenuItem
+                      className="hover:bg-gray-800 focus:bg-gray-800"
+                      onClick={() => handleDelete(user.id)}
+                    >
+                      <div className="flex items-center w-full">
+                        <Trash className="mr-2 h-3 w-3 text-red-500" />
+                        <span className="text-gray-300">Delete</span>
+                      </div>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -102,6 +131,11 @@ export async function UsersTable() {
           ))}
         </TableBody>
       </Table>
+      {users.length === 0 && (
+        <div className="text-center py-12 text-neutral-500 bg-neutral-900/50 rounded-xl border border-neutral-800">
+          No users found.
+        </div>
+      )}
     </div>
   );
 }
