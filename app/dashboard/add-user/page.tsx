@@ -1,29 +1,29 @@
 "use client";
 
-// import { toast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { addUser } from "@/lib/user.action";
 import { ArrowDown } from "lucide-react";
 import React, { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 
 const AddUser = () => {
-  const [role, setRole] = useState("Worker");
+  const [role, setRole] = useState("MODERATOR");
   const [data, action] = useActionState(addUser, {
     success: false,
     message: "",
   });
 
-  // if (data.success) {
-  //   toast({
-  //     title: "Success",
-  //     description: data.message,
-  //   });
-  // }
-
   const handleSubmit = (formData: FormData) => {
     formData.set("role", role);
     return action(formData);
   };
+
+  if (data.success) {
+    toast({
+      title: "Success",
+      description: data.message,
+    });
+  }
 
   function SubmitButton() {
     const { pending } = useFormStatus();
@@ -56,7 +56,6 @@ const AddUser = () => {
             <div className="mt-1">
               <input
                 id="name"
-                defaultValue={"Beletu"}
                 name="name"
                 type="text"
                 required
@@ -76,7 +75,6 @@ const AddUser = () => {
             <div className="mt-1">
               <input
                 id="email"
-                defaultValue={"beletu@gmail.com"}
                 name="email"
                 type="email"
                 autoComplete="email"
@@ -98,7 +96,6 @@ const AddUser = () => {
               <input
                 id="phone"
                 name="phone"
-                defaultValue={"0945123698"}
                 type="tel"
                 className="appearance-none block w-full px-3 py-2 border border-neutral-800 rounded-lg bg-neutral-900 placeholder-neutral-500 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
                 placeholder="Enter user phone number"
@@ -117,7 +114,6 @@ const AddUser = () => {
               <input
                 id="password"
                 name="password"
-                defaultValue={"123456"}
                 type="password"
                 required
                 minLength={6}
@@ -137,7 +133,6 @@ const AddUser = () => {
             <div className="mt-1">
               <input
                 id="confirmPassword"
-                defaultValue={"123456"}
                 name="confirmPassword"
                 type="password"
                 required
@@ -158,7 +153,6 @@ const AddUser = () => {
               <ArrowDown className="text-white/50 absolute right-2 top-2" />
               <select
                 id="role"
-                defaultValue={"MODERATOR"}
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 className="appearance-none block w-full px-3 py-2 border border-neutral-800 rounded-lg bg-neutral-900 placeholder-neutral-500 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"

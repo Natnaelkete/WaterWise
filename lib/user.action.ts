@@ -79,11 +79,12 @@ export async function addUser(prevState: unknown, formData: FormData) {
       },
     });
 
-    return { success: true, message: "User Add successfully" };
+    return { success: true, message: "User added successfully" };
   } catch (error) {
     if (isRedirectError(error)) {
       throw error;
     }
+    console.log("This is from addUser", error);
 
     return {
       success: false,
