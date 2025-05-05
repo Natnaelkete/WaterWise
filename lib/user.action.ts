@@ -5,6 +5,7 @@ import { hashSync } from "bcrypt-ts-edge";
 import { db } from "./prisma";
 import { revalidatePath } from "next/cache";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { Role } from "@prisma/client";
 
 export async function signInWithCredentials(
   prevState: unknown,
@@ -41,13 +42,15 @@ export async function signUpUserWithGoogle() {
   await signIn("google");
 }
 
-export async function signUpUser(prevState: unknown, formData: FormData) {
+export async function addUser(prevState: unknown, formData: FormData) {
   try {
     const user = {
       name: formData.get("name") as string,
       email: formData.get("email") as string,
       password: formData.get("password") as string,
       confirmPassword: formData.get("confirmPassword"),
+      phone: formData.get("phone"),
+      role: formData.get("role"),
     };
 
     if (user.password !== user.confirmPassword) {
@@ -71,15 +74,12 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
         name: user.name,
         email: user.email,
         password: user.password,
+        phone: user.phone as string,
+        role: user.role as Role,
       },
     });
 
-    await signIn("credentials", {
-      email: user.email,
-      password: plainPassword,
-    });
-
-    return { success: true, message: "User registered successfully" };
+    return { success: true, message: "User Add successfully" };
   } catch (error) {
     if (isRedirectError(error)) {
       throw error;
@@ -99,3 +99,67 @@ export const getUserById = async (userId: string) => {
   if (!user) throw new Error("User not found");
   return user;
 };
+
+export async function updateUser(id: string, formData: FormData) {
+  try {
+    const user = {
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+      confirmPassword: formData.get("confirmPassword"),
+      phone: formData.get("phone"),
+      role: formData.get("role"),
+    };
+
+    await db.user.update({
+      where: { id: id },
+      data: {
+        name: user.name,
+        email: user.email,
+        password: user.password,
+        phone: user.phone as string,
+        role: user.role as Role,
+      },
+    });
+
+    return {
+      success: true,
+      message: "User updated successfully",
+    };
+  } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
+    return {
+      success: false,
+      message: "An unexpected error occurred",
+    };
+  }
+}
+
+export async function deleteUser(id: string) {
+  try {
+    const user = await db.user.findFirst({
+      where: { id: id },
+    });
+
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
+    await db.user.delete({
+      where: { id: id },
+    });
+
+    return { success: true, message: "User deleted successfully" };
+  } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
+    return {
+      success: false,
+      message: "An unexpected error occurred",
+    };
+  }
+}
