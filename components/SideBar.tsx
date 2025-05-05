@@ -11,6 +11,7 @@ import React from "react";
 
 const SideBar = async () => {
   const session = await auth();
+  const isAdmin = session?.user?.role === "ADMIN";
   return (
     <div className="w-full flex flex-col justify-between h-screen p-6 gap-6">
       <div>
@@ -33,16 +34,20 @@ const SideBar = async () => {
             Map
           </div>
         </Link>
-        <Link href="/dashboard/users">
-          <div className="text-neutral-400 mb-5  p-2 rounded-sm hover:bg-gray-800/50 hover:text-neutral-200 hover:translate-x-1 transition-all">
-            Users
-          </div>
-        </Link>
-        <Link href="/dashboard/add-user">
-          <div className="text-neutral-400 mb-5  p-2 rounded-sm hover:bg-gray-800/50 hover:text-neutral-200 hover:translate-x-1 transition-all">
-            Add user
-          </div>
-        </Link>
+        {isAdmin && (
+          <Link href="/dashboard/users">
+            <div className="text-neutral-400 mb-5  p-2 rounded-sm hover:bg-gray-800/50 hover:text-neutral-200 hover:translate-x-1 transition-all">
+              Users
+            </div>
+          </Link>
+        )}
+        {isAdmin && (
+          <Link href="/dashboard/add-user">
+            <div className="text-neutral-400 mb-5  p-2 rounded-sm hover:bg-gray-800/50 hover:text-neutral-200 hover:translate-x-1 transition-all">
+              Add user
+            </div>
+          </Link>
+        )}
       </div>
       <div className="flex justify-between mb-10">
         <div className="flex gap-3">
