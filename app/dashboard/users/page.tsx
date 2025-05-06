@@ -2,6 +2,7 @@ import Link from "next/link";
 import { UsersTable } from "./users-table";
 import { db } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-guard";
+import { Button } from "@/components/ui/button";
 
 export default async function UsersPage() {
   await requireAdmin();
@@ -22,9 +23,9 @@ export default async function UsersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Users</h1>
-        <button>
+        <Button>
           <Link href="/dashboard/add-user">Add User</Link>
-        </button>
+        </Button>
       </div>
       <UsersTable users={users} />
     </div>
