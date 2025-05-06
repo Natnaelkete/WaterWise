@@ -194,13 +194,6 @@ export function ReportTracker() {
                   </div>
 
                   <div className="p-3 rounded-lg bg-white/5 space-y-1.5">
-                    <span className="text-zinc-400 text-sm">Title</span>
-                    <span className="text-white block font-medium">
-                      {reportDetails.title}
-                    </span>
-                  </div>
-
-                  <div className="p-3 rounded-lg bg-white/5 space-y-1.5">
                     <span className="text-zinc-400 text-sm">Location</span>
                     <span className="text-white block font-medium">
                       {reportDetails.location}

@@ -16,7 +16,7 @@ export async function GET(
 
     const report = await db.report.findUnique({
       where: {
-        id: (await params).reportId, // Changed from reportId to id if that's your Prisma model field
+        reportId: (await params).reportId,
       },
     });
 
