@@ -8,6 +8,9 @@ export default async function SignInPage() {
   if (session?.user?.role === "ADMIN") {
     return redirect("/dashboard");
   }
+  if (session?.user?.role === "MODERATOR") {
+    return redirect("/dashboard");
+  }
   if (session?.user?.role === "USER") {
     return redirect("/");
   }

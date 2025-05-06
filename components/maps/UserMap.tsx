@@ -25,24 +25,20 @@ const UserMap = ({
   setCoordinates,
   LatLng: { latitude, longitude },
 }: FormType) => {
-  // Define the bounding box for Ethiopia (approximate coordinates)
-  const ethiopiaBounds = new LatLngBounds([3.385, 32.98], [14.875, 48.02]);
-
   return (
     <MapContainer
-      center={[latitude || 9.145, longitude || 40.4897]}
-      className="h-screen"
+      center={[latitude || 7.6890118, longitude || 36.8198714]}
+      className="h-screen w-full"
+      zoom={10}
       scrollWheelZoom={true}
       style={{ height: "100%", width: "100%" }}
-      maxBounds={ethiopiaBounds}
-      minZoom={3}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <Marker
-        position={[latitude || 9.145, longitude || 40.4897]}
+        position={[latitude || 7.6890118, longitude || 36.8198714]}
         draggable={false}
       >
         <Popup>
@@ -57,21 +53,9 @@ const UserMap = ({
       </Marker>
       <DetectClick setCoordinates={setCoordinates} />
       {latitude && longitude && <ChangeCenter lat={latitude} lng={longitude} />}
-      <SetInitialView bounds={ethiopiaBounds} />
     </MapContainer>
   );
 };
-
-function SetInitialView({ bounds }: { bounds: LatLngBounds }) {
-  const map = useMap();
-  useEffect(() => {
-    map.fitBounds(bounds, {
-      padding: [50, 50],
-      animate: false,
-    });
-  }, [map, bounds]);
-  return null;
-}
 
 function DetectClick({ setCoordinates }: any) {
   const router = useRouter();

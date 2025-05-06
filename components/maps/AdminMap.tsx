@@ -6,7 +6,6 @@ import {
   TileLayer,
   Marker,
   Popup,
-  useMap,
   LayersControl,
 } from "react-leaflet";
 
@@ -15,14 +14,10 @@ import { Report } from "@prisma/client";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
-import { useSearchParams } from "next/navigation";
 
 const AdminMap = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [reports, setReports] = useState<Report[]>([]);
-  const searchParams = useSearchParams();
-  const lat = Number(searchParams?.get("lat"));
-  const lng = Number(searchParams?.get("lng"));
 
   const { BaseLayer } = LayersControl;
 
@@ -66,8 +61,8 @@ const AdminMap = () => {
   return (
     <MapContainer
       center={[
-        reports[0]?.latitude || 7.6890118,
-        reports[0]?.longitude || 36.8198714,
+        (filteredReport[0]?.latitude as number) || 7.6890118,
+        (filteredReport[0]?.longitude as number) || 36.8198714,
       ]}
       zoom={10}
       scrollWheelZoom={true}
@@ -107,28 +102,20 @@ const AdminMap = () => {
         </BaseLayer>
       </LayersControl>
 
-      {filteredReport?.map((report) => (
+      {filteredReport?.map((reportItem) => (
         <Marker
-          key={report.id}
+          key={reportItem.id}
           position={[
-            report.latitude || 7.4230114,
-            report.longitude || 36.8594321,
+            (reportItem?.latitude as number) || 7.6890118,
+            (reportItem?.longitude as number) || 36.8198714,
           ]}
           draggable={false}
         >
-          <Popup>{report.status}</Popup>
+          <Popup>{reportItem.status}</Popup>
         </Marker>
       ))}
-      <ChangeCenter lat={lat} lng={lng} />
     </MapContainer>
   );
 };
-
-function ChangeCenter({ lat, lng }: { lat: number; lng: number }) {
-  const map = useMap();
-
-  map.setView([lat, lng]);
-  return null;
-}
 
 export default AdminMap;

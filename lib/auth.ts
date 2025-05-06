@@ -54,7 +54,7 @@ export const {
       return token;
     },
     authorized({ request, auth }: any) {
-      const protectedPaths = [/\/dashboard\/(.*)/, /\/admin/];
+      const protectedPaths = [/\/dashboard\/(.*)/, /\/admin/, /\/moderator/];
 
       const { pathname } = request.nextUrl;
 
