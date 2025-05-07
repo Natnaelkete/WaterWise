@@ -265,7 +265,7 @@ const Dashboard = () => {
                       className="text-white/80 hover:text-white/50 transition-colors"
                       onClick={() =>
                         router.push(
-                          `/map?lat=${report.latitude}&lng=${report.longitude}`
+                          `/dashboard/map?lat=${report.latitude}&lng=${report.longitude}`
                         )
                       }
                     />

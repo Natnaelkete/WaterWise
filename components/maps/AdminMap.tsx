@@ -7,6 +7,7 @@ import {
   Marker,
   Popup,
   LayersControl,
+  useMap,
 } from "react-leaflet";
 
 import { Report } from "@prisma/client";
@@ -14,12 +15,17 @@ import { Report } from "@prisma/client";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
+import { useSearchParams } from "next/navigation";
 
 const AdminMap = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [reports, setReports] = useState<Report[]>([]);
 
   const { BaseLayer } = LayersControl;
+
+  const searchParams = useSearchParams();
+  const latitude = Number(searchParams.get("lat"));
+  const longitude = Number(searchParams.get("lng"));
 
   useEffect(() => {
     fetchReports();
@@ -114,8 +120,18 @@ const AdminMap = () => {
           <Popup>{reportItem.status}</Popup>
         </Marker>
       ))}
+
+      {latitude && longitude && <ChangeCenter lat={latitude} lng={longitude} />}
     </MapContainer>
   );
 };
+
+function ChangeCenter({ lat, lng }: { lat: number; lng: number }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView([lat, lng]);
+  }, [map, lat, lng]);
+  return null;
+}
 
 export default AdminMap;
