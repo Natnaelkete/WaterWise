@@ -367,15 +367,13 @@ export function ReportForm({ onComplete }: ReportFormProps) {
               />
             </div>
           </div>
-          <div className="h-[300px] bg-white mx-auto my-5 w-[100%]">
-            <UserMap
-              setCoordinates={updateCoordinates}
-              LatLng={{
-                latitude: formData.latitude,
-                longitude: formData.longitude,
-              }}
-            />
-          </div>
+          <UserMap
+            setCoordinates={updateCoordinates}
+            LatLng={{
+              latitude: formData.latitude,
+              longitude: formData.longitude,
+            }}
+          />
         </div>
       )}
 
