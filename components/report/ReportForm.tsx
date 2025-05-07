@@ -367,7 +367,7 @@ export function ReportForm({ onComplete }: ReportFormProps) {
               />
             </div>
           </div>
-          <div className="h-[300px] mt-5">
+          <div className="h-[300px] bg-white mx-auto my-5 w-[100%]">
             <UserMap
               setCoordinates={updateCoordinates}
               LatLng={{

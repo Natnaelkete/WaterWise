@@ -8,12 +8,11 @@ import {
   useMapEvents,
   useMap,
 } from "react-leaflet";
-import { LatLngBounds } from "leaflet";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 type FormType = {
@@ -28,7 +27,7 @@ const UserMap = ({
   return (
     <MapContainer
       center={[latitude || 7.6890118, longitude || 36.8198714]}
-      className="h-screen w-full"
+      className="h-[300px] w-[100%]"
       zoom={10}
       scrollWheelZoom={true}
       style={{ height: "100%", width: "100%" }}
