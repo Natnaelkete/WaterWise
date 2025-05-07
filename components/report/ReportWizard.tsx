@@ -6,9 +6,7 @@ import { ReportSubmitted } from "./ReportFormCompleted";
 
 export function ReportWizard() {
   const [currentStep, setCurrentStep] = useState(1);
-  console.log("Current Step is:", currentStep);
   const [reportData, setReportData] = useState<any>(null);
-  console.log("This is from REportWizard", reportData);
 
   const handleStepComplete = async (data: any) => {
     setReportData({ ...reportData, ...data });
