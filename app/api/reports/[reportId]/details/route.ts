@@ -7,13 +7,6 @@ export async function GET(
   { params }: { params: Promise<{ reportId: string }> }
 ) {
   try {
-    const reportId = (await params).reportId;
-    const session = await auth();
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const report = await db.report.findUnique({
       where: {
         reportId: (await params).reportId,
