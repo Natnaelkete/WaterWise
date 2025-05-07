@@ -1,23 +1,31 @@
 "use client";
 
-import { Report, ReportStatus, ReportType } from "@prisma/client";
-import { useEffect, useOptimistic, useState, useTransition } from "react";
+import { Report, ReportStatus, ReportType, User } from "@prisma/client";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { MapPin, TrashIcon } from "lucide-react";
 import Image from "next/image";
 import { toast } from "@/hooks/use-toast";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-const Dashboard = () => {
+type sessionType = {
+  user: User;
+  expires: string;
+};
+
+const Dashboard = ({ session }: { session: sessionType }) => {
   const [reports, setReports] = useState<Report[]>([]);
   const [filter, setFilter] = useState<ReportStatus | "ALL">("ALL");
   const [typeFilter, setTypeFilter] = useState<ReportType | "ALL">("ALL");
   const [isLoading, setIsLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
+  const [isPending, startTransition] = useTransition();
+
   const limit = Number(process.env.LIMITS) || 10;
 
-  const [isPending, startTransition] = useTransition();
+  const isAdmin = session?.user?.role === "ADMIN";
+
   const router = useRouter();
 
   useEffect(() => {
@@ -270,22 +278,24 @@ const Dashboard = () => {
                       }
                     />
                   </div>
-                  <div className="cursor-pointer">
-                    <TrashIcon
-                      className="text-red-700 hover:text-red-500 transition-colors"
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "Are you sure you want to delete this report?"
-                          )
-                        ) {
-                          startTransition(async () => {
-                            await deleteReport(report.id);
-                          });
-                        }
-                      }}
-                    />
-                  </div>
+                  {isAdmin && (
+                    <div className="cursor-pointer">
+                      <TrashIcon
+                        className="text-red-700 hover:text-red-500 transition-colors"
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              "Are you sure you want to delete this report?"
+                            )
+                          ) {
+                            startTransition(async () => {
+                              await deleteReport(report.id);
+                            });
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

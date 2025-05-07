@@ -15,6 +15,8 @@ export default async function Layout({
     redirect("/auth/signin");
   }
 
+  const isAdmin = session?.user?.role === "ADMIN";
+
   return (
     <div className="relative min-h-screen bg-black selection:bg-sky-50">
       <div className="fixed inset-0 -z-10 min-h-screen">
@@ -32,7 +34,7 @@ export default async function Layout({
             <div className="flex justify-between items-center">
               <Link href="/dashboard">
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
-                  Admin Dashboard
+                  {isAdmin ? "Admin Dashboard" : "Moderator Dashboard"}
                 </h1>
               </Link>
             </div>
