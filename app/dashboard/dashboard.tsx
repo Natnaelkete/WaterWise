@@ -32,22 +32,39 @@ const Dashboard = ({ session }: { session: sessionType }) => {
     fetchReports(true);
   }, []);
 
+  useEffect(() => {
+    setReports([]);
+    setPage(1);
+    setHasMore(true);
+    fetchReports(true);
+  }, [filter, typeFilter]);
+
   const fetchReports = async (initialLoad = false) => {
     try {
-      const response = await fetch(`/api/reports?page=${page}&limit=${limit}`);
+      const response = await fetch(
+        `/api/reports?page=${initialLoad ? 1 : page}&limit=${limit}${
+          filter !== "ALL" ? `&status=${filter}` : ""
+        }${typeFilter !== "ALL" ? `&type=${typeFilter}` : ""}`
+      );
       const { data: newItems, hasMore: moreAvailable } = await response.json();
 
-      setReports((prev) => [...prev, ...newItems]);
-      setHasMore(moreAvailable);
-      setPage((prev) => prev + 1);
-
       if (initialLoad) {
+        setReports(newItems);
+        setPage(2);
         setIsLoading(false);
+      } else {
+        setReports((prev) => [...prev, ...newItems]);
+        setPage((prev) => prev + 1);
       }
+
+      setHasMore(moreAvailable);
     } catch (error) {
       console.error("Error fetching reports:", error);
       setReports([]);
       setHasMore(false);
+      if (initialLoad) {
+        setIsLoading(false);
+      }
     }
   };
 

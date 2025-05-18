@@ -65,5 +65,3 @@ export const {
   },
   ...authConfig,
 });
-
-// export const { handlers, auth, signIn, signOut } = NextAuth(config);
