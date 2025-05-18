@@ -106,15 +106,6 @@ export function UsersTable({ users }: { users: UserType[] }) {
                     align="end"
                     className="bg-gray-900 border-gray-800"
                   >
-                    <DropdownMenuItem className="hover:bg-gray-800 focus:bg-gray-800">
-                      <Link
-                        href={`/dashboard/users/edit/${user.id}`}
-                        className="flex items-center w-full"
-                      >
-                        <Pencil className="mr-2 h-3 w-3 text-gray-400" />
-                        <span className="text-gray-300">Edit</span>
-                      </Link>
-                    </DropdownMenuItem>
                     <DropdownMenuItem
                       className="hover:bg-gray-800 focus:bg-gray-800"
                       onClick={() => handleDelete(user.id)}

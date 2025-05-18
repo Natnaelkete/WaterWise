@@ -1,6 +1,6 @@
 "use server";
 
-import { signIn, signOut } from "@/lib/auth";
+import { auth, signIn, signOut } from "@/lib/auth";
 import { hashSync } from "bcrypt-ts-edge";
 import { db } from "./prisma";
 import { revalidatePath } from "next/cache";
@@ -94,32 +94,59 @@ export async function addUser(prevState: unknown, formData: FormData) {
 }
 
 export const getUserById = async (userId: string) => {
-  const user = await db.user.findFirst({
-    where: { id: userId },
-  });
-  if (!user) throw new Error("User not found");
-  return user;
+  try {
+    const user = await db.user.findFirst({
+      where: { id: userId },
+    });
+    if (!user) throw new Error("User not found");
+    return user;
+  } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
+    return {
+      success: false,
+      message: "An unexpected error occurred",
+    };
+  }
 };
 
-export async function updateUser(id: string, formData: FormData) {
+export async function updateUser(prevState: unknown, formData: FormData) {
   try {
+    const session = await auth();
+
+    const currentUser = await db.user.findFirst({
+      where: {
+        id: session?.user?.id,
+      },
+    });
+
+    if (!currentUser) {
+      return { success: false, message: "User not found" };
+    }
+
     const user = {
       name: formData.get("name") as string,
       email: formData.get("email") as string,
       password: formData.get("password") as string,
       confirmPassword: formData.get("confirmPassword"),
       phone: formData.get("phone"),
-      role: formData.get("role"),
     };
 
+    if (user.password !== user.confirmPassword) {
+      return { success: false, message: "Confirm password correctly" };
+    }
+
+    user.password = hashSync(user.password, 10);
+
     await db.user.update({
-      where: { id: id },
+      where: { id: session?.user?.id },
       data: {
         name: user.name,
         email: user.email,
         password: user.password,
         phone: user.phone as string,
-        role: user.role as Role,
       },
     });
 

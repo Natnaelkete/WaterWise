@@ -1,11 +1,5 @@
 import { auth, signOut } from "@/lib/auth";
-import {
-  ArrowLeft,
-  DoorClosed,
-  DropletIcon,
-  LogOutIcon,
-  User,
-} from "lucide-react";
+import { DropletIcon, LogOutIcon, User } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -22,7 +16,6 @@ const SideBar = async () => {
             </div>
             <span className="text-lg font-semibold text-white">WaterWise</span>
           </Link>
-          <ArrowLeft className="text-white/50" />
         </div>
         <Link href="/dashboard">
           <div className="text-neutral-400 mb-5  p-2 rounded-sm hover:bg-gray-800/50 hover:text-neutral-200 hover:translate-x-1 transition-all">
@@ -50,12 +43,14 @@ const SideBar = async () => {
         )}
       </div>
       <div className="flex justify-between mb-10">
-        <div className="flex gap-3">
-          <User className="text-white/50" />
-          <span className="text-neutral-400">
-            {session?.user?.name || "Admin"}
-          </span>
-        </div>
+        <Link href="/dashboard/profile/edit">
+          <div className="flex gap-3 cursor-pointer ">
+            <User className="text-white/50 hover:text-white" />
+            <span className="text-neutral-400 hover:text-white">
+              {session?.user?.name || "Admin"}
+            </span>
+          </div>
+        </Link>
         <form
           action={async () => {
             "use server";
