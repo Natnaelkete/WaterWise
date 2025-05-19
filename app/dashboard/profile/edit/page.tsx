@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 
 const UpdateUserPage = async () => {
   const session = await auth();
-  const user = await getUserById(session?.user?.id!);
+  const user = await getUserById(session?.user?.id || "");
 
   return (
     <>
