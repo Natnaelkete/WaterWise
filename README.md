@@ -7,6 +7,7 @@ WaterWise is water leakage reporting and management system that helps users to r
 - leaflet map
 - prisma
 - postgressql
+- Gemini Ai
 
 ## Setup Instructions
 
