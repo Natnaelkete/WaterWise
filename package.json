@@ -32,7 +32,7 @@
     "leaflet-defaulticon-compatibility": "^0.1.2",
     "leaflet-geosearch": "^4.2.0",
     "lucide-react": "^0.456.0",
-    "next": "^15.2.4",
+    "next": "15.2.6",
     "next-auth": "^5.0.0-beta.25",
     "openai": "^4.72.0",
     "react": "^19.1.0",
